@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayes Ingenuo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <main class="tarjeta" id="Tarjeta_Configuracion">
+        <h1>Clasificador <span>Bayes Ingenuo</span></h1>
+        <section class="fila" id="Contenedor_CargarData">
+            <h3>Cargar dataset:</h3>
+            <div class="campo">
+                <input type="file" id="input_filedata" accept=".csv,.txt,.data,.arff">
+            </div>
+        </section>
+        <section class="fila" id="Contenedor_Pruebas">
+            <h3>Pruebas:</h3>
+            <div class="grupos">
+                <fieldset class="grupo" id="Grupo_Mismo_Dataset">
+                    <label class="opcion">
+                        <input type="radio" name="Fuente_Pruebas" id="Radio_same_Data" value="mismo">
+                        <span>Mismo dataset</span>
+                    </label>
+                    <div class="subopciones">
+                        <label class="opcion">
+                            <input type="radio" name="Metodo_Validacion" id="Radio_Validacion_Simple" value="simple">
+                            <span>Validación simple</span>
+                        </label>
+                        <div class="campo-inline" id="Contenedor_Porcentaje">
+                            <label for="Input_porcentaje_entrenamiento">Porcentaje de entrenamiento:</label>
+                            <div class="input-sufijo">
+                                <input type="number" id="Input_porcentaje_entrenamiento" min="1" max="99">
+                                <span>%</span>
+                            </div>
+                        </div>
+                        <label class="opcion">
+                            <input type="radio" name="Metodo_Validacion" id="Radio_Validacion_Cruzada" value="cruzada">
+                            <span>Validación cruzada (50%-50%)</span>
+                        </label>
+
+                        <label class="opcion opcion-check">
+                            <input type="checkbox" id="Check_Estratificada">
+                            <span>Selección aleatoria estratificada (mismo % por clase)</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="grupo" id="Grupo_Archivo_Externo">
+                    <label class="opcion">
+                        <input type="radio" name="Fuente_Pruebas" id="Radio_Archivo_Externo" value="externo">
+                        <span>Archivo de pruebas externo</span>
+                    </label>
+                    <div class="subopciones">
+                        <input type="file" id="input_Archivo_Externo" accept=".csv,.txt,.data,.arff">
+                    </div>
+                </fieldset>
+            </div>
+        </section>
+
+        <section class="fila" id="Contenedor_Parametros">
+            <h3>Parametros:</h3>
+
+            <div class="grupos">
+                <fieldset class="grupo">
+                    <legend>Variables discretas</legend>
+                    <label class="opcion opcion-check">
+                        <input type="checkbox" id="Check_Laplace">
+                        <span>Suavizado de Laplace</span>
+                    </label>
+                </fieldset>
+                <fieldset class="grupo">
+                    <legend>Variables continuas</legend>
+                    <div class="campo">
+                        <label for="Select_Metodo_Continuas">Metodo:</label>
+                        <select id="Select_Metodo_Continuas">
+                            <option value="normal">Función de densidad</option>
+                            <option value="frecuencias">Binning: intervalos de frecuencias iguales</option>
+                            <option value="anchos">Binning: intervalos de anchos iguales</option>
+                        </select>
+                    </div>
+                    <div class="campo-inline" id="Discrecion">
+                        <label for="Input_Porcentaje_discrecion">Intervalos de discretizacion:</label>
+                        <input type="number" id="Input_Porcentaje_discrecion" min="2" placeholder="5">
+                    </div>
+                </fieldset>
+            </div>
+        </section>
+        <div id="Mensajes_Validacion" class="alerta" role="alert" hidden></div>
+        <div class="acciones" id="Contenedor_btnAnalizar">
+            <input type="button" value="Análisis" id="btnAnalizar" class="boton">
+        </div>
+    </main>
+    <section class="tarjeta" id="Resultados">
+        <h2 class="titulo-resultados">Resultados</h2>
+        <div class="bloque">
+            <h3>Matriz de confusion:</h3>
+            <div class="tabla-scroll">
+                <table id="Tabla_Matriz_Confusion" class="tabla tabla-matriz">
+                    <thead>
+                        <tr>
+                            <th>Real \ Predicho</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="vacio"><td colspan="99">Sin resultados todavia. Carga un dataset y presiona Analisis.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bloque">
+            <h3>Metricas de evaluacion:</h3>
+            <div class="tabla-scroll">
+                <table id="Tabla_Metricas" class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Clase</th>
+                            <th>Precisión</th>
+                            <th>Exhaustividad (recall)</th>
+                            <th>Especificidad</th>
+                            <th>Medida F1</th>
+                            <th>Soporte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="vacio"><td colspan="6">Sin resultados todavía.</td></tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Promedio macro</th>
+                            <td id="Prom_Precision">—</td>
+                            <td id="Prom_Recall">—</td>
+                            <td id="Prom_Especificidad">—</td>
+                            <td id="Prom_F1">—</td>
+                            <td id="Total_Soporte">—</td>
+                        </tr>
+                        <tr>
+                            <th>Promedio ponderado</th>
+                            <td id="Pond_Precision">—</td>
+                            <td id="Pond_Recall">—</td>
+                            <td id="Pond_Especificidad">—</td>
+                            <td id="Pond_F1">—</td>
+                            <td id="Pond_Soporte">—</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="bloque campo-inline accuracy">
+            <label for="Input_Acurrecy">Accuracy:</label>
+            <input type="text" id="Input_Acurrecy" readonly placeholder="—">
+        </div>
+
+        <div class="bloque" id="Bloque_Predicciones" hidden>
+            <h3>Predicciones del archivo externo:</h3>
+            <div class="tabla-scroll">
+                <table id="Tabla_Predicciones" class="tabla">
+                    <thead>
+                        <tr>
+                            <th>Instancia</th>
+                            <th>Clase real</th>
+                            <th>Clase predicha</th>
+                            <th>P(clase predicha)</th>
+                            <th>Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
